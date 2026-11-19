@@ -28,14 +28,15 @@ public class ReportService {
         for (BookStatus status : BookStatus.values()) {
             statusCounts.put(status, 0);
         }
-
         Map<String, Integer> borrowedGenres = new HashMap<>();
+
         for (Book book : library.getBooks()) {
             if (book.getType() == BookType.PHYSICAL) {
                 physicalBooks++;
-            } else if (book.getType() == BookType.DIGITAL) {
+            } else {
                 digitalBooks++;
             }
+
             statusCounts.put(book.getStatus(), statusCounts.get(book.getStatus()) + 1);
 
             if (book.getStatus() == BookStatus.BORROWED) {
@@ -48,19 +49,18 @@ public class ReportService {
         String mostBorrowedGenre = null;
         int mostBorrowedGenreCount = 0;
         for (Map.Entry<String, Integer> entry : borrowedGenres.entrySet()) {
-            if (entry.getValue() > mostBorrowedGenreCount
-                    || (entry.getValue() == mostBorrowedGenreCount
-                    && (mostBorrowedGenre == null || entry.getKey().compareToIgnoreCase(mostBorrowedGenre) < 0))) {
+            if (entry.getValue() > mostBorrowedGenreCount) {
                 mostBorrowedGenre = entry.getKey();
                 mostBorrowedGenreCount = entry.getValue();
             }
         }
 
-        return new LibraryReport(library.size(), physicalBooks, digitalBooks, statusCounts,
-                mostBorrowedGenre, mostBorrowedGenreCount);
+        return new LibraryReport(library.size(), physicalBooks, digitalBooks,
+                statusCounts, mostBorrowedGenre, mostBorrowedGenreCount);
     }
 
     public static final class LibraryReport {
+
         private final int totalBooks;
         private final int physicalBooks;
         private final int digitalBooks;
@@ -89,10 +89,6 @@ public class ReportService {
 
         public int getDigitalBooks() {
             return digitalBooks;
-        }
-
-        public Map<BookStatus, Integer> getStatusCounts() {
-            return statusCounts;
         }
 
         public int getStatusCount(BookStatus status) {

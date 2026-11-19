@@ -2,17 +2,16 @@ package services;
 
 import enums.BookStatus;
 import models.Book;
-import models.Library;
 
 public class BorrowService {
 
-    private final Library library;
+    private final BookService bookService;
 
-    public BorrowService(Library library) {
-        if (library == null) {
-            throw new IllegalArgumentException("Library cannot be null.");
+    public BorrowService(BookService bookService) {
+        if (bookService == null) {
+            throw new IllegalArgumentException("BookService cannot be null.");
         }
-        this.library = library;
+        this.bookService = bookService;
     }
 
     public Book borrowBook(int bookId, String borrowerName) {
@@ -21,14 +20,14 @@ public class BorrowService {
             throw new IllegalArgumentException("Borrower's name cannot be empty.");
         }
 
-        Book book = library.findById(bookId);
+        Book book = bookService.findById(bookId);
         if (book == null) {
             throw new IllegalArgumentException("No book found with ID " + bookId + ".");
         }
-        if (!book.isAvailable()) {
-            if (book.getStatus() == BookStatus.BORROWED) {
-                throw new IllegalArgumentException("'" + book.getTitle() + "' is already borrowed.");
-            }
+        if (book.getStatus() == BookStatus.BORROWED) {
+            throw new IllegalArgumentException("'" + book.getTitle() + "' is already borrowed.");
+        }
+        if (book.getStatus() != BookStatus.AVAILABLE) {
             throw new IllegalArgumentException("'" + book.getTitle() + "' is not available to borrow.");
         }
 
@@ -38,7 +37,7 @@ public class BorrowService {
     }
 
     public Book returnBook(int bookId) {
-        Book book = library.findById(bookId);
+        Book book = bookService.findById(bookId);
         if (book == null) {
             throw new IllegalArgumentException("No book found with ID " + bookId + ".");
         }
