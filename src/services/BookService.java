@@ -10,29 +10,18 @@ import models.PhysicalBook;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Business logic for adding, listing and searching books.
- * Throws IllegalArgumentException with a user-friendly message when a rule is broken;
- * the controller catches it and displays the message.
- */
 public class BookService {
 
     private static final String DEFAULT_GENRE = "Unknown";
 
     private final Library library;
+    private int nextId = 1;
 
     public BookService(Library library) {
         this.library = library;
+        syncNextId();
     }
 
-    /**
-     * Validates the input and adds a new book (status AVAILABLE).
-     *
-     * @param yearText   the year as typed by the user (validated here)
-     * @param typeDetail shelf location for PHYSICAL, file format for DIGITAL
-     * @return the newly created book
-     * @throws IllegalArgumentException if any validation rule fails (no book is created)
-     */
     public Book addBook(String title, String author, String isbn, String genre,
                         String yearText, BookType type, String typeDetail) {
 
@@ -51,10 +40,12 @@ public class BookService {
         if (isbn.isEmpty()) {
             throw new IllegalArgumentException("ISBN cannot be empty.");
         }
-        if (library.isbnExists(isbn)) {
+        if (isbnExists(isbn)) {
             throw new IllegalArgumentException("A book with ISBN '" + isbn + "' already exists.");
         }
+
         int year = parseYear(yearText);
+
         if (type == null) {
             throw new IllegalArgumentException("Type must be Physical or Digital.");
         }
@@ -62,7 +53,8 @@ public class BookService {
             genre = DEFAULT_GENRE;
         }
 
-        int id = library.generateNextId();
+        int id = nextId++;
+
         Book book;
         if (type == BookType.PHYSICAL) {
             if (typeDetail.isEmpty()) {
@@ -80,19 +72,13 @@ public class BookService {
         return book;
     }
 
-    /** @return all books in the order they were added. */
     public List<Book> getAllBooks() {
         return new ArrayList<>(library.getBooks());
     }
 
-    /**
-     * Finds books whose chosen field contains the keyword, ignoring capitalisation.
-     * An empty (or null) keyword returns all books.
-     */
     public List<Book> searchBooks(SearchField field, String keyword) {
         String needle = clean(keyword).toLowerCase();
         List<Book> matches = new ArrayList<>();
-
         for (Book book : library.getBooks()) {
             if (needle.isEmpty() || getField(book, field).toLowerCase().contains(needle)) {
                 matches.add(book);
@@ -101,18 +87,42 @@ public class BookService {
         return matches;
     }
 
-    // ---- helpers ----
+    public Book findById(int id) {
+        for (Book book : library.getBooks()) {
+            if (book.getId() == id) {
+                return book;
+            }
+        }
+        return null;
+    }
+
+    public boolean isbnExists(String isbn) {
+        if (isbn == null) {
+            return false;
+        }
+        String wanted = isbn.trim();
+        for (Book book : library.getBooks()) {
+            if (book.getIsbn().equalsIgnoreCase(wanted)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void syncNextId() {
+        for (Book book : library.getBooks()) {
+            if (book.getId() >= nextId) {
+                nextId = book.getId() + 1;
+            }
+        }
+    }
 
     private String getField(Book book, SearchField field) {
         switch (field) {
-            case TITLE:
-                return book.getTitle();
-            case AUTHOR:
-                return book.getAuthor();
-            case GENRE:
-                return book.getGenre();
-            default:
-                return "";
+            case TITLE:  return book.getTitle();
+            case AUTHOR: return book.getAuthor();
+            case GENRE:  return book.getGenre();
+            default:     return "";
         }
     }
 
