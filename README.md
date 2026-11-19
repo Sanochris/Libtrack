@@ -1,32 +1,34 @@
 # LibTrack — Book Library Management System
 
-Group project (3 members). This folder contains Person 1's part:
-enums, models, BookService and BookController.
+LibTrack is a console-based library application for managing physical and digital books. It supports adding, listing and searching books, borrowing and returning books, and viewing a library report. The application uses one shared `Library` instance so changes made by one service are visible to the others.
 
-## Structure
+## Features
 
-```
+- Add physical and digital books with unique IDs.
+- List all books and search by title, author or genre.
+- Borrow a book by ID after validating the ID, availability and borrower's name.
+- Return a borrowed book, restoring its availability and clearing the borrower name.
+- Report total, physical and digital books, counts for every book status, and the most common genre among currently borrowed books.
+
+## Project structure
+
+```text
 src/
-├── Main.java                  (Person 3 - not included yet)
-├── enums/       BookType, BookStatus, SearchField
-├── models/      Book (abstract), PhysicalBook, DigitalBook, Library
-├── services/    BookService  (Person 2: BorrowService, ReportService; Person 3: FileService)
-├── controllers/ BookController (Person 2: BorrowController, ReportController; Person 3: MenuController)
-└── utils/       InputValidator (placeholder - Person 3 replaces it, keep readString(Scanner, String))
+├── Main.java
+├── enums/        BookType, BookStatus, SearchField
+├── models/       Book, PhysicalBook, DigitalBook, Library
+├── services/     BookService, BorrowService, ReportService, FileService
+├── controllers/  BookController, BorrowController, ReportController, MenuController
+└── utils/        InputValidator
 ```
 
-## Compile
+## Compile and run
 
-From this folder, once Main.java exists:
+From this folder, compile all Java source files and launch the application:
 
-```
+```sh
 javac -d out src/*/*.java src/Main.java
 java -cp out Main
 ```
 
-## Notes for teammates
-
-- Create ONE `Library` in Main and pass it to every service.
-- Loading from file: use the constructors that take `status` and `borrowerName`, then `library.addBook(book)`. This keeps the ID counter correct.
-- Borrow/return: `library.findById(id)`, `book.setStatus(...)`, `book.setBorrowerName(...)`.
-- A blank genre is stored as "Unknown".
+The `Main` class should create one `Library` and pass it to each service. Borrowing and returning update each book's status and borrower name in that shared library. A report's most borrowed genre is calculated from books whose status is currently `BORROWED`; if there are no borrowed books, the report displays `None`.

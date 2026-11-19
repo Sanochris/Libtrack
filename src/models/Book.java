@@ -3,7 +3,6 @@ package models;
 import enums.BookStatus;
 import enums.BookType;
 
-
 public abstract class Book {
 
     private final int id;
@@ -12,37 +11,35 @@ public abstract class Book {
     private final String isbn;
     private final String genre;
     private final int yearPublished;
+    private final BookType type;
     private BookStatus status;
-    private String borrowerName; // null when nobody has the book
+    private String borrowerName;
 
-    /** Constructor for a brand-new book: status AVAILABLE, no borrower. */
-    protected Book(int id, String title, String author, String isbn, String genre, int yearPublished) {
-        this(id, title, author, isbn, genre, yearPublished, BookStatus.AVAILABLE, null);
-    }
-
-    /** Full constructor, used when restoring a book from the saved file. */
-    protected Book(int id, String title, String author, String isbn, String genre, int yearPublished,
-                   BookStatus status, String borrowerName) {
+    protected Book(int id, String title, String author, String isbn, String genre,
+                   int yearPublished, BookType type) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.genre = genre;
         this.yearPublished = yearPublished;
+        this.type = type;
+        this.status = BookStatus.AVAILABLE;
+        this.borrowerName = null;
+    }
+
+    protected Book(int id, String title, String author, String isbn, String genre,
+                   int yearPublished, BookType type, BookStatus status, String borrowerName) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.genre = genre;
+        this.yearPublished = yearPublished;
+        this.type = type;
         this.status = status;
         this.borrowerName = borrowerName;
     }
-
-    
-    public abstract BookType getType();
-
-   
-    public abstract String getTypeSpecificValue();
-
-   
-    public abstract String getTypeSpecificLabel();
-
-    // ---- Getters ----
 
     public int getId() {
         return id;
@@ -68,16 +65,17 @@ public abstract class Book {
         return yearPublished;
     }
 
+    public BookType getType() {
+        return type;
+    }
+
     public BookStatus getStatus() {
         return status;
     }
 
-
     public String getBorrowerName() {
         return borrowerName;
     }
-
-    // ---- Setters (only the fields that change after creation) ----
 
     public void setStatus(BookStatus status) {
         this.status = status;
@@ -85,15 +83,5 @@ public abstract class Book {
 
     public void setBorrowerName(String borrowerName) {
         this.borrowerName = borrowerName;
-    }
-
-    public boolean isAvailable() {
-        return status == BookStatus.AVAILABLE;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{id=" + id + ", title='" + title + "', author='" + author + "', type=" + getType()
-                + ", status=" + status + "}";
     }
 }
