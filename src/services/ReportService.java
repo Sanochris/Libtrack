@@ -4,8 +4,8 @@ import enums.BookStatus;
 import enums.BookType;
 import models.Book;
 import models.Library;
+import models.LibraryReport;
 
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,50 +57,5 @@ public class ReportService {
 
         return new LibraryReport(library.size(), physicalBooks, digitalBooks,
                 statusCounts, mostBorrowedGenre, mostBorrowedGenreCount);
-    }
-
-    public static final class LibraryReport {
-
-        private final int totalBooks;
-        private final int physicalBooks;
-        private final int digitalBooks;
-        private final Map<BookStatus, Integer> statusCounts;
-        private final String mostBorrowedGenre;
-        private final int mostBorrowedGenreCount;
-
-        private LibraryReport(int totalBooks, int physicalBooks, int digitalBooks,
-                              Map<BookStatus, Integer> statusCounts,
-                              String mostBorrowedGenre, int mostBorrowedGenreCount) {
-            this.totalBooks = totalBooks;
-            this.physicalBooks = physicalBooks;
-            this.digitalBooks = digitalBooks;
-            this.statusCounts = Collections.unmodifiableMap(new EnumMap<>(statusCounts));
-            this.mostBorrowedGenre = mostBorrowedGenre;
-            this.mostBorrowedGenreCount = mostBorrowedGenreCount;
-        }
-
-        public int getTotalBooks() {
-            return totalBooks;
-        }
-
-        public int getPhysicalBooks() {
-            return physicalBooks;
-        }
-
-        public int getDigitalBooks() {
-            return digitalBooks;
-        }
-
-        public int getStatusCount(BookStatus status) {
-            return statusCounts.getOrDefault(status, 0);
-        }
-
-        public String getMostBorrowedGenre() {
-            return mostBorrowedGenre;
-        }
-
-        public int getMostBorrowedGenreCount() {
-            return mostBorrowedGenreCount;
-        }
     }
 }
