@@ -1,6 +1,7 @@
 package controllers;
 
 import enums.BookStatus;
+import models.LibraryReport;
 import services.ReportService;
 
 public class ReportController {
@@ -15,7 +16,7 @@ public class ReportController {
     }
 
     public void showReport() {
-        ReportService.LibraryReport report = reportService.generateReport();
+        LibraryReport report = reportService.generateReport();
         System.out.println("\n--- Library Report ---");
         System.out.println("Total books: " + report.getTotalBooks());
         System.out.println("Physical books: " + report.getPhysicalBooks());
